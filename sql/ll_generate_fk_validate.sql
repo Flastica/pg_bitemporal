@@ -8,7 +8,7 @@ v_function_name text;
 --v_return_type text;
 BEGIN
 v_function_name:='validate_bt_'||p_table_name||'_'||p_column_name;
-/*v_return_type :=temporal_relationships.get_column_type(
+/*v_return_type :=bitemporal_internal.get_column_type(
 	p_schema_name ,
 	p_table_name ,                                            
 	p_column_name );*/
@@ -17,22 +17,22 @@ v_function_name:='validate_bt_'||p_table_name||'_'||p_column_name;
 t:=format($execute$
 create or replace function %s.%s(    
     p_value anyelement,
-    p_effective temporal_relationships.timeperiod,
-    p_asserted temporal_relationships.timeperiod)
+    p_effective bitemporal_internal.timeperiod,
+    p_asserted bitemporal_internal.timeperiod)
   RETURNS boolean AS
 $BODY$
 declare
 v_record record;
 i integer:=0;
-v_min_low_effective temporal_relationships.time_endpoint;
-v_max_upper_effective temporal_relationships.time_endpoint;
-v_min_low_asserted temporal_relationships.time_endpoint;
-v_max_upper_asserted temporal_relationships.time_endpoint;
+v_min_low_effective bitemporal_internal.time_endpoint;
+v_max_upper_effective bitemporal_internal.time_endpoint;
+v_min_low_asserted bitemporal_internal.time_endpoint;
+v_max_upper_asserted bitemporal_internal.time_endpoint;
 begin
 for v_record in select effective from
     %s.%s  where %s=p_value  
-   and temporal_relationships.has_includes(effective, p_effective) 
-   and temporal_relationships.has_includes(asserted ,p_asserted )
+   and bitemporal_internal.has_includes(effective, p_effective) 
+   and bitemporal_internal.has_includes(asserted ,p_asserted )
 order by lower(effective), upper(effective)
 loop
 if i=0 then 
@@ -64,8 +64,8 @@ if v_max_upper_effective< upper(p_effective) then
 i:=0;
 for v_record in select asserted from
  %s.%s  where %s=p_value
- and temporal_relationships.has_includes(effective,p_effective) 
- and temporal_relationships.has_includes(asserted,p_asserted )
+ and bitemporal_internal.has_includes(effective,p_effective) 
+ and bitemporal_internal.has_includes(asserted,p_asserted )
 order by lower(asserted), upper(asserted)
 loop
 if i=0 then 

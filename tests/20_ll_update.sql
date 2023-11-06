@@ -86,8 +86,8 @@ from bi_temp_tables.devices where device_id =11 $q$
 values 
 ( 11
 ,'new_descr'::text
-  ,'["2016-01-01 00:00:00+00",infinity)'::temporal_relationships.timeperiod
-  ,'["2016-01-02 00:00:00+00",infinity)'::temporal_relationships.timeperiod
+  ,'["2016-01-01 00:00:00+00",infinity)'::bitemporal_internal.timeperiod
+  ,'["2016-01-02 00:00:00+00",infinity)'::bitemporal_internal.timeperiod
 )
 $v$ 
 ,'bitemporal insert, returns select '
@@ -101,7 +101,7 @@ select results_eq($q$select * from bitemporal_internal.ll_bitemporal_correction(
 $$'updated_descr_11'$$,
 'device_id' , 
 '11',
-'[01-01-2016, infinity)' ::temporal_relationships.timeperiod)$q$, 
+'[01-01-2016, infinity)' ::bitemporal_internal.timeperiod)$q$,
 $v$ values(1) $v$
 ,'bitemporal correction'
 );
@@ -175,7 +175,7 @@ select results_eq($q$select * from bitemporal_internal.ll_bitemporal_correction(
 $$'descr_10_corr_on_place'$$,
 'device_id' , 
 '10',
-'[01-01-2017, infinity)'::temporal_relationships.timeperiod , '3017-07-09 21:59:58.993815-05'
+'[01-01-2017, infinity)'::bitemporal_internal.timeperiod , '3017-07-09 21:59:58.993815-05'
 )$q$, 
 $v$ values(1) $v$
 ,'bitemporal correction on place'
@@ -199,7 +199,7 @@ select results_eq($q$select * from bitemporal_internal.ll_bitemporal_correction(
 $$'descr_10_corr_with_new-record'$$,
 'device_id' , 
 '10',
-'[01-01-2017, infinity)' ::temporal_relationships.timeperiod, '3017-07-09 22:10:58.993815-05'
+'[01-01-2017, infinity)' ::bitemporal_internal.timeperiod, '3017-07-09 22:10:58.993815-05'
  )$q$, 
 $v$ values(1) $v$
 ,'bitemporal correction new record'

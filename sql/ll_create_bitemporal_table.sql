@@ -17,7 +17,8 @@ v_error text;
 v_business_key_array text[];
 i int;
 BEGIN
-v_serial_key :=p_table||'_key';
+-- v_serial_key := p_table||'_key';
+v_serial_key :='_UID'; --per mantenere intatta la struttura attuale di Allinea
 v_serial_key_name :=v_serial_key ||' serial';
 v_pk_constraint_name:= p_table||'_pk';
 v_business_key_name :=p_table||'_'||translate(p_business_key, ', ','_')||'_assert_eff_excl';
@@ -30,8 +31,8 @@ EXECUTE format($create$
 CREATE TABLE %s.%s (
                  %s
                  ,%s
-                 ,effective temporal_relationships.timeperiod NOT NULL
-                 ,asserted temporal_relationships.timeperiod  NOT NULL
+                 ,effective bitemporal_internal.timeperiod NOT NULL
+                 ,asserted bitemporal_internal.timeperiod  NOT NULL
                  ,row_created_at timestamptz NOT NULL DEFAULT now()
                  ,CONSTRAINT %s PRIMARY KEY (%s)
                  ,CONSTRAINT %s EXCLUDE 

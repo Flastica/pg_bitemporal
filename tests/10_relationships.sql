@@ -4,13 +4,13 @@ set client_min_messages to warning;
 SELECT plan( 27 );
 
 -- support functions: xor, fst, snd
-select is( temporal_relationships.xor(true, true), false) ;
-select is( temporal_relationships.xor(true, false), true) ;
-select is( temporal_relationships.xor(false, true), true) ;
-select is( temporal_relationships.xor(false, false), false) ;
+select is( bitemporal_internal.xor(true, true), false) ;
+select is( bitemporal_internal.xor(true, false), true) ;
+select is( bitemporal_internal.xor(false, true), true) ;
+select is( bitemporal_internal.xor(false, false), false) ;
 
-select is( temporal_relationships.fst(  daterange('1999-01-01'::date, '2010-12-31'::date)), '1999-01-01'::date );
-select is( temporal_relationships.snd(  daterange('1999-01-01'::date, '2010-12-31'::date)), '2010-12-31'::date );
+select is( bitemporal_internal.fst(  daterange('1999-01-01'::date, '2010-12-31'::date)), '1999-01-01'::date );
+select is( bitemporal_internal.snd(  daterange('1999-01-01'::date, '2010-12-31'::date)), '2010-12-31'::date );
 
 
 --------------------------
@@ -124,7 +124,7 @@ $$ values ( 13) $$ );
 select results_eq(
 $q$
       select 
-        temporal_relationships.has_starts(a , b)
+        bitemporal_internal.has_starts(a , b)
       from testing_relationships
  $q$::text,
 $$ values  
@@ -138,7 +138,7 @@ $$,'has_starts'
 select results_eq(
 $q$
      select
-      temporal_relationships.has_finishes(a , b )
+      bitemporal_internal.has_finishes(a , b )
      from testing_relationships
 $q$::text,
 $$ values  
@@ -152,7 +152,7 @@ $$, 'has_finishes'
 select results_eq(
 $q$
      select
-      temporal_relationships.equals(a , b )
+      bitemporal_internal.equals(a , b )
      from testing_relationships
 $q$::text,
 $$ values  
@@ -167,7 +167,7 @@ $$, 'equals'
 select results_eq(
 $q$
      select
-      temporal_relationships.is_during(a , b )
+      bitemporal_internal.is_during(a , b )
      from testing_relationships 
 $q$::text,
 $$ values  
@@ -181,7 +181,7 @@ $$, 'is_during'
 select results_eq(
 $q$
      select
-      temporal_relationships.is_contained_in(a , b )
+      bitemporal_internal.is_contained_in(a , b )
      from testing_relationships
 $q$::text,
 $$ values  
@@ -194,7 +194,7 @@ $$, 'is_contained_in'
 select results_eq(
 $q$
      select
-      temporal_relationships.has_during(a , b )
+      bitemporal_internal.has_during(a , b )
      from testing_relationships
 $q$::text,
 $$ values  
@@ -208,7 +208,7 @@ $$, 'has_during'
 select results_eq(
 $q$
      select
-      temporal_relationships.is_overlaps(a , b )
+      bitemporal_internal.is_overlaps(a , b )
      from testing_relationships
 $q$::text,
 $$ values  
@@ -221,7 +221,7 @@ $$, 'is_overlaps'
 select results_eq(
 $q$
      select
-      temporal_relationships.is_overlaps(b,a )
+      bitemporal_internal.is_overlaps(b,a )
      from testing_relationships
 $q$::text,
 $$ values  
@@ -234,7 +234,7 @@ $$, 'is_overlaps'
 select results_eq(
 $q$
      select
-      temporal_relationships.has_overlaps(a , b )
+      bitemporal_internal.has_overlaps(a , b )
      from testing_relationships
 $q$::text,
 $$ values  
@@ -247,7 +247,7 @@ $$, 'has_overlaps'
 select results_eq(
 $q$
      select
-      temporal_relationships.is_before(a , b )
+      bitemporal_internal.is_before(a , b )
      from testing_relationships
 $q$::text,
 $$ values  
@@ -260,7 +260,7 @@ $$, 'is_before'
 select results_eq(
 $q$
      select
-      temporal_relationships.is_after(a , b )
+      bitemporal_internal.is_after(a , b )
      from testing_relationships
 $q$::text,
 $$ values  
@@ -273,7 +273,7 @@ $$, 'is_after'
 select results_eq(
 $q$
      select
-      temporal_relationships.has_before(a , b )
+      bitemporal_internal.has_before(a , b )
      from testing_relationships
 $q$::text,
 $$ values  
@@ -286,7 +286,7 @@ $$, 'has_before'
 select results_eq(
 $q$
      select
-      temporal_relationships.is_meets(a , b )
+      bitemporal_internal.is_meets(a , b )
      from testing_relationships
 $q$::text,
 $$ values  
@@ -299,7 +299,7 @@ $$, 'is_meets'
 select results_eq(
 $q$
      select
-      temporal_relationships.has_meets(a , b )
+      bitemporal_internal.has_meets(a , b )
      from testing_relationships
 $q$::text,
 $$ values  
@@ -315,7 +315,7 @@ $$, 'has_meets'
 select results_eq(
 $q$
      select
-      temporal_relationships.has_includes(a , b )
+      bitemporal_internal.has_includes(a , b )
      from testing_relationships
 $q$::text,
 $$ values  
@@ -328,7 +328,7 @@ $$, 'has_includes'
 select results_eq(
 $q$
      select
-      temporal_relationships.has_contains(a , b )
+      bitemporal_internal.has_contains(a , b )
      from testing_relationships
 $q$::text,
 $$ values  
@@ -341,7 +341,7 @@ $$, 'has_contains'
 select results_eq(
 $q$
      select
-      temporal_relationships.has_aligns_with(a , b )
+      bitemporal_internal.has_aligns_with(a , b )
      from testing_relationships
 $q$::text,
 $$ values  
@@ -354,7 +354,7 @@ $$, 'has_aligns_with'
 select results_eq(
 $q$
      select
-      temporal_relationships.has_encloses(a , b )
+      bitemporal_internal.has_encloses(a , b )
      from testing_relationships
 $q$::text,
 $$ values  
@@ -367,7 +367,7 @@ $$, 'has_encloses'
 select results_eq(
 $q$
      select
-      temporal_relationships.has_excludes(a , b )
+      bitemporal_internal.has_excludes(a , b )
      from testing_relationships
 $q$::text,
 $$ values  

@@ -20,7 +20,8 @@ i int;
 v_partition_clause text;
 v_sql text;
 BEGIN
-v_serial_key :=p_table||'_key';
+-- v_serial_key :=p_table||'_key';
+v_serial_key :='_UID';
 v_serial_key_name :=v_serial_key ||' serial';
 v_pk_constraint_name:= p_table||'_pk';
 v_table_definition :=replace (p_table_definition, ' serial', ' integer');
@@ -31,8 +32,8 @@ v_sql :=format($create$
 CREATE TABLE %s.%s (
                  %s
                  ,%s
-                 ,effective temporal_relationships.timeperiod NOT NULL
-                 ,asserted temporal_relationships.timeperiod  NOT NULL
+                 ,effective bitemporal_internal.timeperiod NOT NULL
+                 ,asserted bitemporal_internal.timeperiod  NOT NULL
                  ,row_created_at timestamptz NOT NULL DEFAULT now()
                  ,CONSTRAINT %s PRIMARY KEY (%s,%s)
                      ) %s

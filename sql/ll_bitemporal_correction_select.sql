@@ -26,7 +26,7 @@ BEGIN
 
  EXECUTE 
  --v_sql:=
- format($u$ UPDATE %s t SET asserted = temporal_relationships.timeperiod_range(lower(asserted), %L, '[)')
+ format($u$ UPDATE %s t SET asserted = bitemporal_internal.timeperiod_range(lower(asserted), %L, '[)')
                     WHERE  %s   AND %L::timestamptz <@ t.effective
                           AND upper(t.asserted)='infinity' 
                           AnD lower(t.asserted)<%L$u$  --end assertion period for the old record(s), if any
@@ -40,7 +40,7 @@ BEGIN
  EXECUTE 
 -- v_sql:=
  format($i$INSERT INTO %s ( %s, effective, asserted )
-                SELECT %s ,effective, temporal_relationships.timeperiod_range(now(),
+                SELECT %s ,effective, bitemporal_internal.timeperiod_range(now(),
                  'infinity', '[)')
                   FROM %s WHERE  %s  AND %L::timestamptz <@ effective
                           AND upper(asserted)= %L 

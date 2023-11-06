@@ -1,8 +1,8 @@
 CREATE OR REPLACE FUNCTION bitemporal_internal.ll_bitemporal_insert(p_table text
 ,p_list_of_fields text
 ,p_list_of_values TEXT
-,p_effective temporal_relationships.timeperiod 
-,p_asserted temporal_relationships.timeperiod ) 
+,p_effective bitemporal_internal.timeperiod 
+,p_asserted bitemporal_internal.timeperiod ) 
 RETURNS INTEGER
 AS
  $BODY$

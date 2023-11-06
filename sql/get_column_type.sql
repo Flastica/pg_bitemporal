@@ -1,4 +1,4 @@
-create or replace function  temporal_relationships.get_column_type(
+create or replace function  bitemporal_internal.get_column_type(
 	p_schema_name text,
 	p_table_name text,                                            
 	p_column_name text)

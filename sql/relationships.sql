@@ -1,7 +1,7 @@
 begin;
-create schema if not exists temporal_relationships;
-grant usage on schema temporal_relationships to public;
-set local search_path to temporal_relationships, public;
+create schema if not exists bitemporal_internal;
+grant usage on schema bitemporal_internal to public;
+set local search_path to bitemporal_internal, public;
 -- create a domain if not exists 
 DO $d$
 DECLARE
@@ -52,7 +52,7 @@ as
 $func$
    select tstzrange(p_range_start, p_range_end,'[)')::timeperiod;
 $func$
-SET search_path = 'temporal_relationships';
+SET search_path = 'bitemporal_internal';
 -- backwards compatible
 create or replace
 function timeperiod_range( _s time_endpoint, _e time_endpoint, _ignored text)
@@ -62,7 +62,7 @@ as
 $func$
    select timeperiod(_s,_e);
 $func$
-SET search_path = 'temporal_relationships';
+SET search_path = 'bitemporal_internal';
 create or replace 
 function xor(a boolean, b boolean) returns boolean
 language sql IMMUTABLE
@@ -97,7 +97,7 @@ returns boolean language SQL IMMUTABLE
 as $$
   select fst(a) = fst(b) and snd(a) <> snd(b);
 $$
-SET search_path = 'temporal_relationships';
+SET search_path = 'bitemporal_internal';
 --
 -- [finishes] [finishes^-1]
 --
@@ -115,7 +115,7 @@ returns boolean language SQL IMMUTABLE
 as $$
   select snd(a) = snd(b) and fst(a) <> fst(b);
 $$
-SET search_path = 'temporal_relationships';
+SET search_path = 'bitemporal_internal';
 --
 -- [equals]
 --
@@ -130,7 +130,7 @@ as $$
   -- doubtful = operator exists for timeperiod
  select fst(a) = fst(b) and snd(a) = snd(b) ;
 $$
-SET search_path = 'temporal_relationships';
+SET search_path = 'bitemporal_internal';
 --
 -- [during]
 --
@@ -144,7 +144,7 @@ returns boolean language SQL IMMUTABLE
 as $$
   select (fst(a) > fst(b)) and (snd(a) < snd(b));
 $$
-SET search_path = 'temporal_relationships';
+SET search_path = 'bitemporal_internal';
 --
 -- [during^-1] contained
 --
@@ -158,7 +158,7 @@ returns boolean language SQL IMMUTABLE
 as $$
   select is_during(b, a);
 $$
-SET search_path = 'temporal_relationships';
+SET search_path = 'bitemporal_internal';
 
 --
 -- [during] or [during^-1] 
@@ -169,7 +169,7 @@ returns boolean language SQL IMMUTABLE
 as $$
   select is_during(a, b) or is_during(b,a);
 $$
-SET search_path = 'temporal_relationships';
+SET search_path = 'bitemporal_internal';
 --
 -- [overlaps]
 --
@@ -188,7 +188,7 @@ returns boolean language SQL IMMUTABLE
 as $$
   select  fst(a) < fst(b) and snd(a) > fst(b) and snd(a) < snd(b);
 $$
-SET search_path = 'temporal_relationships';
+SET search_path = 'bitemporal_internal';
 
 --
 -- either overlaps the other [overlaps] [overlaps^-1]
@@ -199,7 +199,7 @@ returns boolean language SQL IMMUTABLE
 as $$
   select  is_overlaps(a , b ) or is_overlaps(b , a ) ;
 $$
-SET search_path = 'temporal_relationships';
+SET search_path = 'bitemporal_internal';
 --
 -- [before]
 --
@@ -213,7 +213,7 @@ returns boolean language SQL IMMUTABLE
 as $$
   select  snd(a) < fst(b);
 $$
-SET search_path = 'temporal_relationships';
+SET search_path = 'bitemporal_internal';
 --
 -- [before^-1]
 --
@@ -228,7 +228,7 @@ as $$
     -- is_before(b, a)
    select snd(b) < fst(a);
 $$
-SET search_path = 'temporal_relationships';
+SET search_path = 'bitemporal_internal';
 
 -- 
 -- either [before] [before^-1]
@@ -239,7 +239,7 @@ returns boolean language SQL IMMUTABLE
 as $$
   select  snd(a) < fst(b) or snd(b) < fst(a);
 $$
-SET search_path = 'temporal_relationships';
+SET search_path = 'bitemporal_internal';
 --
 -- [meets] [meets^-1]
 --
@@ -259,7 +259,7 @@ returns boolean language SQL IMMUTABLE
 as $$
  select  snd(a) = fst(b) ;
 $$
-SET search_path = 'temporal_relationships';
+SET search_path = 'bitemporal_internal';
 
 create or replace
 function has_meets(a timeperiod, b timeperiod)
@@ -267,7 +267,7 @@ returns boolean language SQL IMMUTABLE
 as $$
   select snd(a) = fst(b) or snd(b) = fst(a);
 $$
-SET search_path = 'temporal_relationships';
+SET search_path = 'bitemporal_internal';
 -- 
 -- Partition of Allen Relationships
 --
@@ -283,7 +283,7 @@ as $$
       (snd(a) <= snd(b) and (fst(a) >= fst(b) or fst(b) < snd(a))) or 
         (snd(a) >= snd(b) and (fst(a) < snd(b) or fst(a) <= fst(b)));
 $$
-SET search_path = 'temporal_relationships';
+SET search_path = 'bitemporal_internal';
 
 --
 -- [Contains]
@@ -298,7 +298,7 @@ as $$
      (snd(a) < snd(b) and fst(a) > fst(b)) or 
        (snd(b) < snd(a) and fst(b) > fst(a));
 $$
-SET search_path = 'temporal_relationships';
+SET search_path = 'bitemporal_internal';
 
 --
 -- [Aligns With]
@@ -310,7 +310,7 @@ returns boolean language SQL IMMUTABLE
 as $$
    select   xor( fst(a) = fst(b) , snd(a) = snd(b) );
 $$
-SET search_path = 'temporal_relationships';
+SET search_path = 'bitemporal_internal';
 
 --
 -- [Encloses]
@@ -323,7 +323,7 @@ returns boolean language SQL IMMUTABLE
 as $$
   select has_during(a,b) or has_aligns_with(a,b);
 $$
-SET search_path = 'temporal_relationships';
+SET search_path = 'bitemporal_internal';
 
 
 --
@@ -336,7 +336,7 @@ returns boolean language SQL IMMUTABLE
 as $$
    select fst(a) >= snd(b) or fst(b) >= snd(a) ;
 $$
-SET search_path = 'temporal_relationships';
+SET search_path = 'bitemporal_internal';
 commit;
 
 -- vim: set filetype=pgsql expandtab tabstop=2 shiftwidth=2:

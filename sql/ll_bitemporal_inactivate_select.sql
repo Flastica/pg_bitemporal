@@ -2,8 +2,8 @@
   p_table_name text
 ,p_search_fields TEXT  -- search fields
 ,p_values_selected_search TEXT  --  search values selected
-, p_effective temporal_relationships.timeperiod -- inactive starting
-, p_asserted temporal_relationships.timeperiod -- will be asserted
+, p_effective bitemporal_internal.timeperiod -- inactive starting
+, p_asserted bitemporal_internal.timeperiod -- will be asserted
 )
 RETURNS INTEGER
 AS
@@ -17,7 +17,8 @@ v_table_attr text[];
 v_now timestamptz:=now();-- so that we can reference this time
   v_keys int[];
   v_keys_old  int[];
-  v_serial_key text:=p_table_name||'_key';
+--   v_serial_key text:=p_table_name||'_key';
+ v_serial_key text:='_UID';
   v_table text:=p_schema_name||'.'||p_table_name;
  
 BEGIN 
@@ -40,17 +41,17 @@ v_list_of_fields_to_insert:= v_list_of_fields_to_insert_excl_effective||',effect
 
 EXECUTE
  format($u$ WITH updt AS (UPDATE %s SET asserted =
-            temporal_relationships.timeperiod(lower(asserted), lower(%L::temporal_relationships.timeperiod))
-                    WHERE ( %s )in( %s ) AND (temporal_relationships.is_overlaps(effective, %L)
+            bitemporal_internal.timeperiod(lower(asserted), lower(%L::bitemporal_internal.timeperiod))
+                    WHERE ( %s )in( %s ) AND (bitemporal_internal.is_overlaps(effective, %L)
                                                    
                                        OR 
-                                       temporal_relationships.is_meets(effective, %L)
+                                       bitemporal_internal.is_meets(effective, %L)
                                        OR 
-                                       temporal_relationships.has_finishes(effective, %L))
+                                       bitemporal_internal.has_finishes(effective, %L))
                                       AND ---now()<@ asserted  
-                                       (temporal_relationships.is_overlaps(asserted, %L) 
+                                       (bitemporal_internal.is_overlaps(asserted, %L) 
                                        OR 
-                                       temporal_relationships.has_finishes(asserted, %L)) returning %s )
+                                       bitemporal_internal.has_finishes(asserted, %L)) returning %s )
                                       SELECT array_agg(%s) FROM updt
                                       $u$  
           , v_table
@@ -75,7 +76,7 @@ EXECUTE
  
  
 EXECUTE format($i$INSERT INTO %s ( %s, effective, asserted )
-                SELECT %s ,temporal_relationships.timeperiod(lower(effective), lower(%L::temporal_relationships.timeperiod)) ,%L
+                SELECT %s ,bitemporal_internal.timeperiod(lower(effective), lower(%L::bitemporal_internal.timeperiod)) ,%L
                   FROM %s WHERE ( %s )in ( %s )  $i$
           , v_table
           , v_list_of_fields_to_insert_excl_effective

@@ -23,8 +23,8 @@ select bitemporal_internal.unique_constraint('release_version') ;
 CREATE TABLE database_versions (
  release_version_id       integer  --  | not null default nextval('database_versions_id_seq'::regclass)
  , release_version   numeric(3,1)  -- temporal unique
- , effective                    temporal_relationships.timeperiod
- , asserted                     temporal_relationships.timeperiod
+ , effective                    bitemporal_internal.timeperiod
+ , asserted                     bitemporal_internal.timeperiod
  , row_created_at               timestamptz    NOT NULL DEFAULT now()
  , CONSTRAINT "bitemporal ok release_version_id unique idx" EXCLUDE
       USING gist (release_version_id WITH =, asserted WITH &&, effective WITH &&)
@@ -46,9 +46,9 @@ CREATE TABLE postgres_clusters (
   , postgres_version             int              -- bitemporal fk
   , archive                      boolean   DEFAULT false NOT NULL
   , preferred_auth_method        text      references  postgres_auth_methods ( auth_method )
-  , effective                    temporal_relationships.timeperiod
-  , asserted                     temporal_relationships.timeperiod
-  , row_created_at               temporal_relationships.time_endpoint NOT NULL DEFAULT now()
+  , effective                    bitemporal_internal.timeperiod
+  , asserted                     bitemporal_internal.timeperiod
+  , row_created_at               bitemporal_internal.time_endpoint NOT NULL DEFAULT now()
   , CONSTRAINT "bitemporal pk postgres_cluster_id unique idx" EXCLUDE
        USING gist (postgres_cluster_id WITH =, asserted WITH &&, effective WITH &&)
   , CONSTRAINT "bitemporal pk postgres_cluster_id" check(true or 'pk' <> '@postgres_cluster_id@')

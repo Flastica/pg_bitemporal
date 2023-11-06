@@ -65,56 +65,56 @@ select * from bitemporal_internal.ll_bitemporal_insert('bt_tutorial.staff_bt'
 ,$$staff_id, staff_name, staff_location$$
 ,quote_literal(nextval('staff_id_seq'))||$$,
 'mystaff', 'mylocation'$$
-,temporal_relationships.timeperiod(now(), 'infinity') --effective
-,temporal_relationships.timeperiod(now(), 'infinity') --asserted
+,bitemporal_internal.timeperiod(now(), 'infinity') --effective
+,bitemporal_internal.timeperiod(now(), 'infinity') --asserted
 );
 
 select * from bitemporal_internal.ll_bitemporal_insert('bt_tutorial.cust_bt'
 ,$$cust_id, cust_name, phone$$
 ,quote_literal(nextval('cust_id_seq'))||$$,
 'mycust', '+6281197889890'$$
-,temporal_relationships.timeperiod(now(), 'infinity') --effective
-,temporal_relationships.timeperiod(now(), 'infinity') --asserted
+,bitemporal_internal.timeperiod(now(), 'infinity') --effective
+,bitemporal_internal.timeperiod(now(), 'infinity') --asserted
 );
 
 select * from bitemporal_internal.ll_bitemporal_insert('bt_tutorial.product_bt'
 ,$$product_id, product_name,weight,price$$
 ,quote_literal(nextval('product_id_seq'))||$$,
 'myproduct', 100,200$$
-,temporal_relationships.timeperiod(now(), 'infinity') --effective
-,temporal_relationships.timeperiod(now(), 'infinity') --asserted
+,bitemporal_internal.timeperiod(now(), 'infinity') --effective
+,bitemporal_internal.timeperiod(now(), 'infinity') --asserted
 );
 
 select * from bitemporal_internal.ll_bitemporal_insert('bt_tutorial.product_bt'
 ,$$product_id, product_name,weight,price$$
 ,quote_literal(nextval('product_id_seq'))||$$,
 'myproduct2', 200,250$$
-,temporal_relationships.timeperiod(now(), 'infinity') --effective
-,temporal_relationships.timeperiod(now(), 'infinity') --asserted
+,bitemporal_internal.timeperiod(now(), 'infinity') --effective
+,bitemporal_internal.timeperiod(now(), 'infinity') --asserted
 );
 
 select * from bitemporal_internal.ll_bitemporal_insert('bt_tutorial.order_bt'
 ,$$order_id, staff_id,cust_id,order_created_at$$
 ,quote_literal(nextval('order_id_seq'))||$$,
 1,1,$$||quote_literal(now())
-,temporal_relationships.timeperiod(now(), 'infinity') --effective
-,temporal_relationships.timeperiod(now(), 'infinity') --asserted
+,bitemporal_internal.timeperiod(now(), 'infinity') --effective
+,bitemporal_internal.timeperiod(now(), 'infinity') --asserted
 );
 
 select * from bitemporal_internal.ll_bitemporal_insert('bt_tutorial.order_line_bt'
 ,$$order_line_id,order_id, product_id,qty$$
 ,quote_literal(nextval('order_line_id_seq'))||$$,
 1,1,10$$
-,temporal_relationships.timeperiod(now(), 'infinity') --effective
-,temporal_relationships.timeperiod(now(), 'infinity') --asserted
+,bitemporal_internal.timeperiod(now(), 'infinity') --effective
+,bitemporal_internal.timeperiod(now(), 'infinity') --asserted
 );
 
 select * from bitemporal_internal.ll_bitemporal_insert('bt_tutorial.order_line_bt'
 ,$$order_line_id,order_id, product_id,qty$$
 ,quote_literal(nextval('order_line_id_seq'))||$$,
 1,2,15$$
-,temporal_relationships.timeperiod(now(), 'infinity') --effective
-,temporal_relationships.timeperiod(now(), 'infinity') --asserted
+,bitemporal_internal.timeperiod(now(), 'infinity') --effective
+,bitemporal_internal.timeperiod(now(), 'infinity') --asserted
 );
 
 SELECT * FROM  bitemporal_internal.ll_bitemporal_update('bt_tutorial'
@@ -123,8 +123,8 @@ SELECT * FROM  bitemporal_internal.ll_bitemporal_update('bt_tutorial'
 ,$$'newlocation'$$  -- values to update with
 ,'staff_id'  -- search fields
 ,'1' --  search values
-,temporal_relationships.timeperiod(now(), 'infinity')
-,temporal_relationships.timeperiod(now(), 'infinity')
+,bitemporal_internal.timeperiod(now(), 'infinity')
+,bitemporal_internal.timeperiod(now(), 'infinity')
 ) ;
 
 select
@@ -156,7 +156,7 @@ SELECT * FROM bitemporal_internal.ll_bitemporal_correction(
    '275',
     'product_id',
     '2',
-    temporal_relationships.timeperiod ('2020-10-11 18:33:26.816311-05'::timestamptz,'infinity'),
+    bitemporal_internal.timeperiod ('2020-10-11 18:33:26.816311-05'::timestamptz,'infinity'),
     now() );
     
     ---corrected price

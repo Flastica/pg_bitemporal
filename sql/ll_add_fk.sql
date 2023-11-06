@@ -22,7 +22,7 @@ if bitemporal_internal.validate_bitemporal_pk_uq(
    return  'no primary key or unique constraint';
    exit;
   end if;
-  v_return_type:=temporal_relationships.get_column_type(
+  v_return_type:=bitemporal_internal.get_column_type(
 	p_source_schema_name ,
 	p_source_table_name ,                                            
 	p_source_column_name );

@@ -4,8 +4,8 @@
     p_list_of_values text,
     p_search_fields text,
     p_search_values text,
-    p_effective temporal_relationships.timeperiod,
-    p_now temporal_relationships.time_endpoint )
+    p_effective bitemporal_internal.timeperiod,
+    p_now bitemporal_internal.time_endpoint )
   RETURNS integer AS
 $BODY$
 DECLARE
@@ -14,13 +14,14 @@ v_sql  text;
   v_cnt int:=0;
   v_list_of_fields_to_insert text;
   v_table_attr text[];
-  v_now temporal_relationships.time_endpoint:=p_now ;-- for compatiability with the previous version
-  v_effective_start temporal_relationships.time_endpoint;
-  v_serial_key text:=p_table_name||'_key';
+  v_now bitemporal_internal.time_endpoint:=p_now ;-- for compatiability with the previous version
+  v_effective_start bitemporal_internal.time_endpoint;
+--   v_serial_key text:=p_table_name||'_key';
+  v_serial_key text:='_UID';
   v_table text:=p_schema_name||'.'||p_table_name;
   v_keys int[];
   v_keys_old  int[];
-  v_effective temporal_relationships.timeperiod;
+  v_effective bitemporal_internal.timeperiod;
 BEGIN
  v_table_attr := bitemporal_internal.ll_bitemporal_list_of_fields(v_table);
  IF  array_length(v_table_attr,1)=0
@@ -44,7 +45,7 @@ execute format($$select distinct (effective)from %s
 	--  raise notice 'effective:%',v_effective;
  IF lower(v_effective)<lower(p_effective)
    THEN  ---create new interval
-  -- raise notice 'new interval:%', temporal_relationships.timeperiod(lower(p_effective), upper(v_effective));
+  -- raise notice 'new interval:%', bitemporal_internal.timeperiod(lower(p_effective), upper(v_effective));
   
   perform bitemporal_internal.ll_bitemporal_update(
  p_schema_name, 
@@ -53,8 +54,8 @@ execute format($$select distinct (effective)from %s
  p_search_values,
  p_search_fields,
  p_search_values,
- temporal_relationships.timeperiod(lower(p_effective), upper(v_effective)),
- temporal_relationships.timeperiod(v_now, 'infinity'));
+ bitemporal_internal.timeperiod(lower(p_effective), upper(v_effective)),
+ bitemporal_internal.timeperiod(v_now, 'infinity'));
  
 select  bitemporal_internal.ll_bitemporal_correction(
  p_schema_name, 
@@ -63,7 +64,7 @@ select  bitemporal_internal.ll_bitemporal_correction(
  p_list_of_values ,
 p_search_fields,
  p_search_values,
- temporal_relationships.timeperiod(lower(p_effective), upper(v_effective)),
+ bitemporal_internal.timeperiod(lower(p_effective), upper(v_effective)),
  v_now)  into v_cnt;
 
 	v_effective_start:=upper(v_effective);	v_cnt:=1;
@@ -73,9 +74,9 @@ END IF;
  
 EXECUTE 
 --v_sql:=
- format($u$ WITH updt AS (UPDATE %s SET asserted = temporal_relationships.timeperiod(lower(asserted), %L)
-                    WHERE ( %s )=( %s ) AND lower(effective)>= %L::temporal_relationships.time_endpoint 
-		                  and upper(effective) <=upper(%L::temporal_relationships.timeperiod)     ---is_included (effective )
+ format($u$ WITH updt AS (UPDATE %s SET asserted = bitemporal_internal.timeperiod(lower(asserted), %L)
+                    WHERE ( %s )=( %s ) AND lower(effective)>= %L::bitemporal_internal.time_endpoint
+		                  and upper(effective) <=upper(%L::bitemporal_internal.timeperiod)     ---is_included (effective )
                           AND upper(asserted)='infinity' 
                           AND lower(asserted)<%L returning %s )
                                       SELECT array_agg(%s) FROM updt
@@ -95,7 +96,7 @@ EXECUTE
 EXECUTE 
 -- v_sql:=
  format($i$WITH inst AS (INSERT INTO %s ( %s, effective, asserted )
-                SELECT %s ,effective, temporal_relationships.timeperiod_range(upper(asserted), 'infinity', '[)')
+                SELECT %s ,effective, bitemporal_internal.timeperiod_range(upper(asserted), 'infinity', '[)')
                   FROM %s WHERE ( %s )IN ( %s ) 
                                 returning %s )
                                     SELECT array_agg(%s) FROM inst $i$  --insert new assertion rage with old values where applicable 
@@ -114,8 +115,8 @@ EXECUTE
 if coalesce(array_to_string(v_keys_old,',')) IS NULL 
    then 
 EXECUTE   format($uu$UPDATE %s SET ( %s ) = (SELECT %s ) WHERE ( %s ) = ( %s )
-                           AND lower(effective)>= lower(%L::temporal_relationships.timeperiod) 
-                           and upper(effective) <=upper(%L::temporal_relationships.timeperiod)     ---is_included (effective )
+                           AND lower(effective)>= lower(%L::bitemporal_internal.timeperiod)
+                           and upper(effective) <=upper(%L::bitemporal_internal.timeperiod)     ---is_included (effective )
                          
                            AND upper(asserted)='infinity'
                             $uu$  --update new assertion rage with new values
@@ -159,7 +160,7 @@ $BODY$
     p_list_of_values text,
     p_search_fields text,
     p_search_values text,
-    p_effective temporal_relationships.timeperiod)
+    p_effective bitemporal_internal.timeperiod)
   RETURNS integer AS
   $BODY$
   declare v_rowcount int;
